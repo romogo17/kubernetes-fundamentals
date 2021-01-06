@@ -1,0 +1,28 @@
+- name: Provision the Kubernetes Infrastructure
+  hosts: localhost
+  connection: localhost
+
+  vars:
+    state: present # or 'absent'
+    lab_path:
+      1_1: 1_1-introduction
+      3_1: 3_1-install-kubernetes
+    curr_lab: 3_1
+    cloud_provider: gcp
+
+  tasks:
+    - name: Define the backend configuration with one or more files at init
+      community.general.terraform:
+        project_path: "infra/{{ lab_path[curr_lab] }}"
+        state: "{{ state }}"
+        purge_workspace: yes
+        force_init: true
+        variables_files:
+          - ../{{ cloud_provider }}.tfvars
+      register: result_tf_outputs
+    - name: Print Terraform outputs
+      ansible.builtin.debug:
+        msg: "{{ item.key }}: {{ item.value.value }}"
+      loop: "{{ result_tf_outputs.outputs | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"

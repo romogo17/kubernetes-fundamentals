@@ -1,0 +1,1 @@
+gcp_project = "kubernetes-fundamentals-300314"
