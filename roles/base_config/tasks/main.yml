@@ -1,0 +1,11 @@
+- name: Upgrade all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  become: yes
+
+- name: Install the latest version of some basic packages
+  ansible.builtin.dnf:
+    name: vim
+    state: latest
+  become: yes

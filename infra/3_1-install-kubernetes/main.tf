@@ -29,6 +29,11 @@ resource "google_compute_instance" "vm_instance" {
   metadata = {
     ssh-keys = "kube-user:${file("~/.ssh/id_rsa.pub")}"
   }
+
+  labels = {
+    lab     = "3_1"
+    purpose = "master"
+  }
 }
 
 resource "google_compute_subnetwork" "vpc_subnetwork" {

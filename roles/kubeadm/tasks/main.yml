@@ -1,0 +1,42 @@
+- block:
+    - name: Setup the kubernetes repository
+      ansible.builtin.copy:
+        dest: /etc/yum.repos.d/kubernetes.repo
+        content: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          exclude=kubelet kubeadm kubectl
+
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Install kubeadm
+      ansible.builtin.dnf:
+        name: kubeadm-{{ kubeadm_version }}
+        state: installed
+        disable_excludes: kubernetes
+        allow_downgrade: yes
+
+    - name: Install kubelet
+      ansible.builtin.dnf:
+        name: kubelet-{{ kubelet_version }}
+        state: installed
+        disable_excludes: kubernetes
+        allow_downgrade: yes
+
+    - name: Install kubectl
+      ansible.builtin.dnf:
+        name: kubectl-{{ kubectl_version }}
+        state: installed
+        disable_excludes: kubernetes
+        allow_downgrade: yes
+
+    # TODO: Lock these packages globally. Not only in the kubernetes repo. This is because the kubectl package is included in the google-cloud-sdk repository
+  become: yes
