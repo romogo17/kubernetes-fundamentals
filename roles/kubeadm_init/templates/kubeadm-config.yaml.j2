@@ -1,0 +1,10 @@
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: {{ kubeadm_init.kubernetes_version }}
+controlPlaneEndpoint: "k8smaster:6443"
+networking:
+  podSubnet: {{ kubeadm_init.pod_subnet }}
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+cgroupDriver: {{ kubeadm_init.cgroup_driver }}

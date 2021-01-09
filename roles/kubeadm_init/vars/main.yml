@@ -1,0 +1,8 @@
+kubeadm_config_dir: /root/kubeadm.config.d
+
+kubeadm_init:
+  kubernetes_version: "1.18.1"
+  pod_subnet: "192.168.0.0/16"
+  cgroup_driver: systemd
+
+calico_manifest_url: https://docs.projectcalico.org/manifests/calico.yaml

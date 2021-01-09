@@ -1,0 +1,47 @@
+- block:
+    - name: Add the k8smaster entry to /etc/hosts
+      vars:
+        comment: "# Added by Ansible"
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_default_ipv4.address }} k8smaster  {{ comment }}"
+    - name: Create the kubeadm config directory
+      file:
+        path: "{{ kubeadm_config_dir }}"
+        state: directory
+    - name: Copy the kubeadm config file
+      template:
+        src: kubeadm-config.yaml.j2
+        dest: "{{ kubeadm_config_dir }}/kubeadm-config.yaml"
+    - name: Initialize the Kubernetes control plane
+      shell: kubeadm init --config={{ kubeadm_config_dir }}/kubeadm-config.yaml --upload-certs | tee {{ kubeadm_config_dir }}/kubeadm-init.out
+      args:
+        creates: "{{ kubeadm_config_dir }}/kubeadm-init.out"
+    # - name: Slurp the output of the kubeadm init output
+    #   slurp:
+    #     src: "{{ kubeadm_config_dir }}/kubeadm-init.out"
+    #   register: result_kubeadm_init_output
+    # - name: Print the output of the kubeadm init
+    #   debug:
+    #     msg: |
+    #       KUBEADM OUTPUT
+    #       {{ result_kubeadm_init_output.content | b64decode }}"
+  become: yes
+
+- name: Copy the admin kubectl config to the non-root user
+  copy:
+    remote_src: yes
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+  become: yes
+- name: Download the calico manifest
+  get_url:
+    url: "{{ calico_manifest_url }}"
+    dest: "{{ ansible_env.HOME }}"
+- name: Apply the calico manifests with kubectl
+  k8s:
+    src: "{{ ansible_env.HOME }}/calico.yaml"
+    apply: yes
+  register: result_calico_apply

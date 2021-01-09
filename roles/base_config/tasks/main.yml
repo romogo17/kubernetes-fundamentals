@@ -1,11 +1,19 @@
 - name: Upgrade all packages
-  ansible.builtin.dnf:
+  dnf:
     name: "*"
     state: latest
   become: yes
+  tags: [never, upgrade-os]
 
 - name: Install the latest version of some basic packages
-  ansible.builtin.dnf:
-    name: vim
+  dnf:
+    name:
+      - vim
+      - bash-completion
     state: latest
+  become: yes
+
+- name: Install some required python packages
+  pip:
+    name: openshift
   become: yes

@@ -21,7 +21,7 @@
           - ../{{ cloud_provider }}.tfvars
       register: result_tf_outputs
     - name: Print Terraform outputs
-      ansible.builtin.debug:
+      debug:
         msg: "{{ item.key }}: {{ item.value.value }}"
       loop: "{{ result_tf_outputs.outputs | dict2items }}"
       loop_control:
