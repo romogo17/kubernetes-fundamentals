@@ -1,0 +1,19 @@
+# ansible-playbook labs/3_2.yml -i kube_inventory.gcp.yml --tags "upgrade-os,all"
+# ansible-playbook labs/3_2.yml -i kube_inventory.gcp.yml
+- name: "Lab 3.2: Grow the Cluster - Master"
+  hosts: kube_role_master
+
+  roles:
+    - base_config
+    - crio
+    - kubeadm_base
+    - kubeadm_init
+
+- name: "Lab 3.2: Grow the Cluster - Worker"
+  hosts: kube_role_worker
+
+  roles:
+    - base_config
+    - crio
+    - kubeadm_base
+    # - kubeadm_init
