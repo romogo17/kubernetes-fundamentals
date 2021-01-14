@@ -4,10 +4,13 @@ projects:
 # filters:
 #   - machineType = e2-standard-2
 auth_kind: serviceaccount
-keyed_groups:
-  # Create groups from GCE labels
-  - prefix: kube
-    key: labels
+# keyed_groups:
+#   # Create groups from GCE labels
+#   - prefix: kube
+#     key: labels
+groups:
+  master: "'master' == labels.kubernetes_role"
+  worker: "'worker' == labels.kubernetes_role"
 hostnames:
   # List host by name instead of the default public ip
   - name
@@ -16,3 +19,4 @@ compose:
   # For Private ip use "networkInterfaces[0].networkIP"
   ansible_host: networkInterfaces[0].accessConfigs[0].natIP
   ansible_user: "'kube-user'"
+  kubernetes_role: labels.kubernetes_role

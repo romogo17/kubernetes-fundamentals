@@ -33,8 +33,8 @@ resource "google_compute_instance" "vm_instance_master" {
   }
 
   labels = {
-    lab  = "3_1"
-    role = "master"
+    lab             = "3_1"
+    kubernetes_role = "master"
   }
 }
 
@@ -62,8 +62,8 @@ resource "google_compute_instance" "vm_instance_worker" {
   }
 
   labels = {
-    lab  = "3_1"
-    role = "worker"
+    lab             = "3_1"
+    kubernetes_role = "worker"
   }
 }
 
