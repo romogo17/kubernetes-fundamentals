@@ -5,10 +5,10 @@
   vars:
     state: present # or 'absent'
     lab_path:
-      1_1: 1_1-introduction
-      3_1: 3_1-install-kubernetes
-      3_2: 3_2-grow-the-cluster
-    curr_lab: 3_2
+      '1_1': 1_1-introduction
+      '3_1': 3_1-install-kubernetes
+      '3_2': 3_2-grow-the-cluster
+    curr_lab: '3_2'
     cloud_provider: gcp
 
   tasks:

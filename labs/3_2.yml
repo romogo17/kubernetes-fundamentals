@@ -8,6 +8,7 @@
     - crio
     - kubeadm_base
     - kubeadm_init
+    - kubeadm_joininfo
 
 - name: "Lab 3.2: Grow the Cluster - Worker"
   hosts: kube_role_worker
@@ -16,4 +17,4 @@
     - base_config
     - crio
     - kubeadm_base
-    # - kubeadm_init
+    - kubeadm_join

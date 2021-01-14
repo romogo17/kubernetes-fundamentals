@@ -17,15 +17,6 @@
       shell: kubeadm init --config={{ kubeadm_config_dir }}/kubeadm-config.yaml --upload-certs | tee {{ kubeadm_config_dir }}/kubeadm-init.out
       args:
         creates: "{{ kubeadm_config_dir }}/kubeadm-init.out"
-    # - name: Slurp the output of the kubeadm init output
-    #   slurp:
-    #     src: "{{ kubeadm_config_dir }}/kubeadm-init.out"
-    #   register: result_kubeadm_init_output
-    # - name: Print the output of the kubeadm init
-    #   debug:
-    #     msg: |
-    #       KUBEADM OUTPUT
-    #       {{ result_kubeadm_init_output.content | b64decode }}"
   become: yes
 
 - name: Copy the admin kubectl config to the non-root user

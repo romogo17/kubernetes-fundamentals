@@ -1,0 +1,16 @@
+- name: "Create a new Cluster token"
+  shell: kubeadm token create
+  register: K8S_TOKEN
+  become: true
+
+- name: "Create a Discovery Token CA Certh Hash"
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: K8S_MASTER_CA_HASH
+  become: true
+
+- name: "Add Token and CA Hash to dummy host"
+  add_host:
+    name:   "K8S_TOKEN_HOLDER"
+    token:  "{{ K8S_TOKEN.stdout }}"
+    ca_hash:   "{{ K8S_MASTER_CA_HASH.stdout }}"
+    node_ip: "{{ ansible_default_ipv4.address }}"

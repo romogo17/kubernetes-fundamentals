@@ -1,0 +1,19 @@
+- block:
+    - name: Create the kubeadm config directory
+      file:
+        path: "{{ kubeadm_config_dir }}"
+        state: directory
+    - name: Add the k8smaster entry to /etc/hosts
+      vars:
+        comment: "# Added by Ansible"
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars['K8S_TOKEN_HOLDER']['node_ip'] }} k8smaster  {{ comment }}"
+      when: hostvars['K8S_TOKEN_HOLDER'] is defined
+    # TODO: Refactor k8smaster and 6443 to variables
+    - name: Join the Worker node to the Cluster
+      shell: kubeadm join --token {{ hostvars['K8S_TOKEN_HOLDER']['token'] }} --discovery-token-ca-cert-hash sha256:{{ hostvars['K8S_TOKEN_HOLDER']['ca_hash'] }} k8smaster:6443 | tee {{ kubeadm_config_dir }}/kubeadm-join.out
+      args:
+        creates: "{{ kubeadm_config_dir }}/kubeadm-join.out"
+      when: hostvars['K8S_TOKEN_HOLDER'] is defined
+  become: yes
