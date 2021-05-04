@@ -1,0 +1,29 @@
+- name: Create a backup directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/backup"
+    state: directory
+
+- name: Get the etcd data directory
+  command: sed -n -e 's/^.*--data-dir=//p' /etc/kubernetes/manifests/etcd.yaml
+  become: yes
+  register: etcd_data_dir
+  changed_when: false
+
+- name: Backup files
+  become: yes
+  block:
+    - name: Backup the etcd snapshot
+      ansible.builtin.copy:
+        src: "{{ etcd_data_dir.stdout }}/snapshot.db"
+        dest: "{{ ansible_env.HOME }}/backup/snapshot.db-{{ ansible_date_time.date }}"
+        remote_src: yes
+    - name: Backup the kubeadm config
+      ansible.builtin.copy:
+        src: "{{ kubeadm_config_dir }}/kubeadm-config.yaml"
+        dest: "{{ ansible_env.HOME }}/backup"
+        remote_src: yes
+    - name: Backup the etcd certificates and keys
+      ansible.builtin.copy:
+        src: /etc/kubernetes/pki/etcd
+        dest: "{{ ansible_env.HOME }}/backup"
+        remote_src: yes

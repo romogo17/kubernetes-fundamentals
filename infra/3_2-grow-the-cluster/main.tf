@@ -9,9 +9,9 @@ provider "google" {
   zone    = "us-east1-b"
 }
 
-resource "google_compute_instance" "vm_instance_master" {
+resource "google_compute_instance" "vm_instance_controlplane" {
   count        = 1
-  name         = "kube-master-node${count.index + 1}"
+  name         = "kube-controlplane-node${count.index + 1}"
   machine_type = "e2-standard-2"
 
   boot_disk {
@@ -33,8 +33,8 @@ resource "google_compute_instance" "vm_instance_master" {
   }
 
   labels = {
-    lab             = "3_1"
-    kubernetes_role = "master"
+    lab             = "3_2"
+    kubernetes_role = "controlplane"
   }
 }
 
@@ -62,7 +62,7 @@ resource "google_compute_instance" "vm_instance_worker" {
   }
 
   labels = {
-    lab             = "3_1"
+    lab             = "3_2"
     kubernetes_role = "worker"
   }
 }
@@ -87,4 +87,11 @@ resource "google_compute_firewall" "vpc_firewall" {
 resource "google_compute_network" "vpc_network" {
   name                    = "kube-vpc"
   auto_create_subnetworks = false
+}
+
+output "controlplane_ip_addrs" {
+  value = google_compute_instance.vm_instance_controlplane.*.network_interface.0.access_config.0.nat_ip
+}
+output "worker_ip_addrs" {
+  value = google_compute_instance.vm_instance_worker.*.network_interface.0.access_config.0.nat_ip
 }

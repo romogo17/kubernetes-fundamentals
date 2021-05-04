@@ -1,0 +1,16 @@
+plugin: google.cloud.gcp_compute
+projects:
+  - kubernetes-fundamentals-300314
+auth_kind: serviceaccount
+keyed_groups:
+  - prefix: kube
+    key: labels
+groups:
+  controlplane: "'controlplane' == labels.kubernetes_role"
+  worker: "'worker' == labels.kubernetes_role"
+hostnames:
+  - name
+compose:
+  ansible_host: networkInterfaces[0].accessConfigs[0].natIP
+  ansible_user: "'kube-user'"
+  kubernetes_role: labels.kubernetes_role

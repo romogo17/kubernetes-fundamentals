@@ -12,7 +12,7 @@
     cloud_provider: gcp
 
   tasks:
-    - name: Define the backend configuration with one or more files at init
+    - name: Deploy the infrastructure using Terraform
       community.general.terraform:
         project_path: "infra/{{ lab_path[curr_lab] }}"
         state: "{{ state }}"

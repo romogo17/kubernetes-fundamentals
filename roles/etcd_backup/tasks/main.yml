@@ -1,0 +1,46 @@
+- name: Get the etcd data directory
+  command: sed -n -e 's/^.*--data-dir=//p' /etc/kubernetes/manifests/etcd.yaml
+  become: yes
+  register: etcd_data_dir
+  changed_when: false
+
+- name: Output etcd data directory
+  debug:
+    var: etcd_data_dir.stdout
+    verbosity: 1
+
+- name: Search for the etcd pods
+  community.kubernetes.k8s_info:
+    kind: Pod
+    label_selectors:
+      - component=etcd
+      - tier=control-plane
+  register: etcd_pods
+
+- name: Save an etcd snapshot into the container data directory
+  community.kubernetes.k8s_exec:
+    namespace: kube-system
+    pod: "{{ etcd_pods.resources[0].metadata.name }}"
+    command: |
+      sh -c "ETCDCTL_API=3 \
+        ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt \
+        ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.crt \
+        ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key  \
+        etcdctl --endpoints=https://127.0.0.1:2379 snapshot save /var/lib/etcd/snapshot.db"
+  register: etcd_snapshot_out
+
+- name: Outpuf of the snapshot creation
+  debug:
+    var: etcd_snapshot_out
+    verbosity: 1
+
+- name: Check the status of the snapshot
+  ansible.builtin.stat:
+    path: "{{ etcd_data_dir.stdout }}/snapshot.db"
+  register: snapshot_status
+  become: yes
+
+- name: Snapshot status
+  debug:
+    msg: "Snapshot exists and was created on {{ '%Y-%m-%d %H:%M:%S' | strftime(snapshot_status.stat.ctime) }}"
+  when: snapshot_status.stat.exists

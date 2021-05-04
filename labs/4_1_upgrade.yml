@@ -1,0 +1,7 @@
+# ansible-playbook labs/4_1_upgrade.yml -i inventory.gcp.yml
+- name: "Lab 4.1: Upgrade the cluster"
+  hosts: controlplane
+
+  roles:
+    # - etcd_backup
+    - kubeadm_upgrade

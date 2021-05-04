@@ -1,0 +1,10 @@
+# ansible-playbook labs/3_1_singlenode.yml -i inventory.gcp.yml --tags "upgrade-os,all"
+# ansible-playbook labs/3_1_singlenode.yml -i inventory.gcp.yml
+- name: "Lab 3.1: Installing Kubernetes"
+  hosts: kube_lab_3_1
+
+  roles:
+    - base_config
+    - crio
+    - kubeadm_base
+    - kubeadm_init

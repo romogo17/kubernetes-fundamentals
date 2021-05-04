@@ -1,0 +1,20 @@
+# ansible-playbook labs/3_2_multinode.yml -i inventory.gcp.yml --tags "upgrade-os,all"
+# ansible-playbook labs/3_2_multinode.yml -i inventory.gcp.yml
+- name: "Lab 3.2: Grow the Cluster - Control Plane"
+  hosts: controlplane
+
+  roles:
+    - base_config
+    - crio
+    - kubeadm_base
+    - kubeadm_init
+    - kubeadm_joininfo
+
+- name: "Lab 3.2: Grow the Cluster - Worker"
+  hosts: worker
+
+  roles:
+    - base_config
+    - crio
+    - kubeadm_base
+    - kubeadm_join
